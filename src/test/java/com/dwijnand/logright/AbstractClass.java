@@ -1,12 +1,12 @@
 package com.dwijnand.logright;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractClass {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = InstanceLoggerFactory.getLogger(getClass(),
+        AbstractClass.class);
 
     public void abstractClassLogs() {
-        logger.info("The abstract class logs");
+        LogMeSomething.log(logger, "The abstract class logs");
     }
 }
