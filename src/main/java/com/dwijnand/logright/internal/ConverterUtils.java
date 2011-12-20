@@ -12,8 +12,7 @@ public final class ConverterUtils {
     public static StackTraceElement getStackTraceElementForLogger(
         ILoggingEvent le, String convertionTarget, ContextAware ca) {
 
-        return matchStackTraceElementWithLogger(le, convertionTarget, ca)
-            .getStackTraceElement();
+        return matchStackTraceElementWithLogger(le, convertionTarget, ca).ste;
     }
 
     public static StackTraceElementMatch matchStackTraceElementWithLogger(
@@ -40,10 +39,9 @@ public final class ConverterUtils {
                 String className = ste.getClassName();
                 // TODO: Consider using equals... renaming match class..
                 if (loggerName.startsWith(className))
-                    return new BasicStackTraceElementMatch(ste,
-                        ste.getClassName());
+                    return new StackTraceElementMatch(ste);
                 else if (loggerName.endsWith(className + ")"))
-                    return new BasicStackTraceElementMatch(ste, loggerName);
+                    return new StackTraceElementMatch(ste, loggerName);
             }
         }
         return null;
@@ -66,29 +64,18 @@ public final class ConverterUtils {
         return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
     }
 
-    public static interface StackTraceElementMatch {
-        StackTraceElement getStackTraceElement();
+    public static class StackTraceElementMatch {
+        public final StackTraceElement ste;
+        public String classOfCaller;
 
-        String getClassOfCaller();
-    }
+        public StackTraceElementMatch(StackTraceElement ste) {
+            this.ste = ste;
+            classOfCaller = ste.getClassName();
+        }
 
-    static class BasicStackTraceElementMatch implements StackTraceElementMatch {
-        final StackTraceElement ste;
-        final String classOfCaller;
-
-        BasicStackTraceElementMatch(StackTraceElement ste, String classOfCaller) {
+        StackTraceElementMatch(StackTraceElement ste, String classOfCaller) {
             this.ste = ste;
             this.classOfCaller = classOfCaller;
-        }
-
-        @Override
-        public StackTraceElement getStackTraceElement() {
-            return ste;
-        }
-
-        @Override
-        public String getClassOfCaller() {
-            return classOfCaller;
         }
     }
 }
