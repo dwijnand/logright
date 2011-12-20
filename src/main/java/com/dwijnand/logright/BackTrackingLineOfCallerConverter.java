@@ -1,5 +1,7 @@
 package com.dwijnand.logright;
 
+import com.dwijnand.logright.internal.ConverterUtils;
+
 import ch.qos.logback.classic.pattern.LineOfCallerConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 

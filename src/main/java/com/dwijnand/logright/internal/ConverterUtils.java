@@ -1,20 +1,22 @@
-package com.dwijnand.logright;
+package com.dwijnand.logright.internal;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.ContextAware;
 import org.slf4j.helpers.MessageFormatter;
 
-final class ConverterUtils {
+public final class ConverterUtils {
     private ConverterUtils() {
         // Utility class
     }
 
-    static StackTraceElement getStackTraceElementForLogger(ILoggingEvent le,
-        String convertionTarget, ContextAware ca) {
-        return matchStackTraceElementWithLogger(le, convertionTarget, ca).ste;
+    public static StackTraceElement getStackTraceElementForLogger(
+        ILoggingEvent le, String convertionTarget, ContextAware ca) {
+
+        return matchStackTraceElementWithLogger(le, convertionTarget, ca)
+            .getStackTraceElement();
     }
 
-    static StackTraceElementMatch matchStackTraceElementWithLogger(
+    public static StackTraceElementMatch matchStackTraceElementWithLogger(
         ILoggingEvent le, String convertionTarget, ContextAware ca) {
 
         String loggerName = le.getLoggerName();
@@ -38,9 +40,10 @@ final class ConverterUtils {
                 String className = ste.getClassName();
                 // TODO: Consider using equals... renaming match class..
                 if (loggerName.startsWith(className))
-                    return new StackTraceElementMatch(ste, ste.getClassName());
+                    return new BasicStackTraceElementMatch(ste,
+                        ste.getClassName());
                 else if (loggerName.endsWith(className + ")"))
-                    return new StackTraceElementMatch(ste, loggerName);
+                    return new BasicStackTraceElementMatch(ste, loggerName);
             }
         }
         return null;
@@ -63,14 +66,29 @@ final class ConverterUtils {
         return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
     }
 
-    static class StackTraceElementMatch {
+    public static interface StackTraceElementMatch {
+        StackTraceElement getStackTraceElement();
+
+        String getClassOfCaller();
+    }
+
+    static class BasicStackTraceElementMatch implements StackTraceElementMatch {
         final StackTraceElement ste;
         final String classOfCaller;
 
-        protected StackTraceElementMatch(StackTraceElement ste,
-            String classOfCaller) {
+        BasicStackTraceElementMatch(StackTraceElement ste, String classOfCaller) {
             this.ste = ste;
             this.classOfCaller = classOfCaller;
+        }
+
+        @Override
+        public StackTraceElement getStackTraceElement() {
+            return ste;
+        }
+
+        @Override
+        public String getClassOfCaller() {
+            return classOfCaller;
         }
     }
 }
