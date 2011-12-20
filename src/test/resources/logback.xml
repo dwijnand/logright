@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<configuration debug="true" scan="true">
     <property name="pattern"
         value="%d{HH:mm:ss.SSS} %-5level %class#%method:%line - %msg%n" />
 

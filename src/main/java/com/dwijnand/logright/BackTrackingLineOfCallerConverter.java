@@ -7,7 +7,7 @@ public class BackTrackingLineOfCallerConverter extends LineOfCallerConverter {
     @Override
     public String convert(ILoggingEvent le) {
         StackTraceElement targetStackTraceElement =
-            BackTrackingConverterUtils.getStackTraceElementForLogger(le,
+            ConverterUtils.getStackTraceElementForLogger(le,
                 "line of caller", this);
         if (targetStackTraceElement == null)
             return super.convert(le);

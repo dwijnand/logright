@@ -9,7 +9,7 @@ public class BackTrackingMethodOfCallerConverter extends
     @Override
     public String convert(ILoggingEvent le) {
         StackTraceElement targetStackTraceElement =
-            BackTrackingConverterUtils.getStackTraceElementForLogger(le,
+            ConverterUtils.getStackTraceElementForLogger(le,
                 "method of caller", this);
         if (targetStackTraceElement == null)
             return super.convert(le);

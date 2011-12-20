@@ -5,8 +5,8 @@ import ch.qos.logback.core.spi.ContextAware;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-final class BackTrackingConverterUtils {
-    private BackTrackingConverterUtils() {
+final class ConverterUtils {
+    private ConverterUtils() {
         // Utility class
     }
 
@@ -19,16 +19,15 @@ final class BackTrackingConverterUtils {
                 getStackTraceElementForLogger(callerData, loggerName);
             if (ste == null) {
                 FormattingTuple ft =
-                    MessageFormatter.format("Failed to find {}, "
-                        + "falling back to Logback's so-so solution. "
-                        + "Logger name: {} (caller data to follow)",
+                    MessageFormatter.format("Failed to find {}. "
+                        + "(Logger name: {}, caller data to follow)",
                         convertionTarget, loggerName);
                 ca.addWarn(ft.getMessage());
                 for (int i = 0; i < callerData.length; i++) {
                     StackTraceElement e = callerData[i];
                     ft =
-                        MessageFormatter.format("ClassName {}: {}", i,
-                            e.getClassName());
+                        MessageFormatter.format("CallerData[{}] classname: {}",
+                            i, e.getClassName());
                     ca.addInfo(ft.getMessage());
                 }
             } else
@@ -42,7 +41,9 @@ final class BackTrackingConverterUtils {
 
         if (stackTrace != null) {
             for (StackTraceElement ste : stackTrace) {
-                if (loggerName.startsWith(ste.getClassName()))
+                String className = ste.getClassName();
+                if (loggerName.startsWith(className)
+                    || loggerName.endsWith(className + ")"))
                     return ste;
             }
         }
