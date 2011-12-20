@@ -1,4 +1,6 @@
-package com.dwijnand.logright;
+package com.dwijnand.logright.testsupport;
+
+import com.dwijnand.logright.InstanceLoggerFactory;
 
 import org.slf4j.Logger;
 

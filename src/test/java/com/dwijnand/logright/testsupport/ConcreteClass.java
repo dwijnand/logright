@@ -1,4 +1,4 @@
-package com.dwijnand.logright;
+package com.dwijnand.logright.testsupport;
 
 public class ConcreteClass extends AbstractClass {
     public void concreteClassLogs() {

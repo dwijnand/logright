@@ -1,13 +1,11 @@
 package com.dwijnand.logright;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.dwijnand.logright.testsupport.ConcreteClass;
+import com.dwijnand.logright.testsupport.SimpleStatelessClass;
 
 public class Main {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
     public static void main(String[] args) {
-        LogMeSomething.log(logger, "Hello");
+        SimpleStatelessClass.simpleStatelessClassLogs();
 
         ConcreteClass concreteClass = new ConcreteClass();
         concreteClass.concreteClassLogs();
