@@ -11,29 +11,37 @@ final class ConverterUtils {
 
     static StackTraceElement getStackTraceElementForLogger(ILoggingEvent le,
         String convertionTarget, ContextAware ca) {
+        return matchStackTraceElementWithLogger(le, convertionTarget, ca)
+            .getStackTraceElement();
+    }
+
+    static StackTraceElementMatch matchStackTraceElementWithLogger(
+        ILoggingEvent le, String convertionTarget, ContextAware ca) {
 
         String loggerName = le.getLoggerName();
         StackTraceElement[] callerData = le.getCallerData();
         if (callerData != null && callerData.length > 0) {
-            StackTraceElement ste =
-                getStackTraceElementForLogger(callerData, loggerName);
-            if (ste == null) {
+            StackTraceElementMatch stem =
+                matchStackTraceElementWithLogger(callerData, loggerName);
+            if (stem == null) {
                 logFailedCallerDataMatch(le, convertionTarget, ca);
             } else
-                return ste;
+                return stem;
         }
         return null;
     }
 
-    static StackTraceElement getStackTraceElementForLogger(
+    static StackTraceElementMatch matchStackTraceElementWithLogger(
         StackTraceElement[] stackTrace, String loggerName) {
 
         if (stackTrace != null) {
             for (StackTraceElement ste : stackTrace) {
                 String className = ste.getClassName();
-                if (loggerName.startsWith(className)
-                    || loggerName.endsWith(className + ")"))
-                    return ste;
+                // TODO: Consider using equals... renaming match class..
+                if (loggerName.startsWith(className))
+                    return new StackTraceElementExactMatch(ste);
+                else if (loggerName.endsWith(className + ")"))
+                    return new StackTraceElementSubclassMatch(ste, loggerName);
             }
         }
         return null;
@@ -54,5 +62,54 @@ final class ConverterUtils {
 
     private static String format(String messagePattern, Object... args) {
         return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
+    }
+
+    static interface StackTraceElementMatch {
+        StackTraceElement getStackTraceElement();
+
+        String getClassOfCaller();
+    }
+
+    private static abstract class AbstractStackTraceElementMatch implements
+        StackTraceElementMatch {
+
+        private final StackTraceElement stackTraceElement;
+
+        public AbstractStackTraceElementMatch(
+            StackTraceElement stackTraceElement) {
+            this.stackTraceElement = stackTraceElement;
+        }
+
+        public StackTraceElement getStackTraceElement() {
+            return stackTraceElement;
+        }
+    }
+
+    private static final class StackTraceElementExactMatch extends
+        AbstractStackTraceElementMatch {
+
+        public StackTraceElementExactMatch(StackTraceElement stackTraceElement) {
+            super(stackTraceElement);
+        }
+
+        public String getClassOfCaller() {
+            return getStackTraceElement().getClassName();
+        }
+    }
+
+    private static final class StackTraceElementSubclassMatch extends
+        AbstractStackTraceElementMatch {
+
+        private final String classOfCaller;
+
+        public StackTraceElementSubclassMatch(
+            StackTraceElement stackTraceElement, String classOfCaller) {
+            super(stackTraceElement);
+            this.classOfCaller = classOfCaller;
+        }
+
+        public String getClassOfCaller() {
+            return classOfCaller;
+        }
     }
 }
