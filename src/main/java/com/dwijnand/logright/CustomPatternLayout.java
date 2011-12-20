@@ -13,6 +13,11 @@ public class CustomPatternLayout extends PatternLayout {
         Map<String, String> defaultConverterMutableMap =
             new HashMap<String, String>(PatternLayout.defaultConverterMap);
 
+        defaultConverterMutableMap.put("C",
+            BackTrackingClassOfCallerConverter.class.getName());
+        defaultConverterMutableMap.put("class",
+            BackTrackingClassOfCallerConverter.class.getName());
+
         defaultConverterMutableMap.put("M",
             BackTrackingMethodOfCallerConverter.class.getName());
         defaultConverterMutableMap.put("method",

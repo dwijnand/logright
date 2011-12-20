@@ -10,15 +10,13 @@ final class BackTrackingConverterUtils {
         // Utility class
     }
 
-    static StackTraceElement getOrLogTargetStackTraceElement(ILoggingEvent le,
+    static StackTraceElement getStackTraceElementForLogger(ILoggingEvent le,
         String convertionTarget, ContextAware ca) {
         String loggerName = le.getLoggerName();
-        String logCallerClassName = loggerName; // Assumption
         StackTraceElement[] callerData = le.getCallerData();
         if (callerData != null && callerData.length > 0) {
             StackTraceElement ste =
-                getStackTraceElementWithClassName(callerData,
-                    logCallerClassName);
+                getStackTraceElementForLogger(callerData, loggerName);
             if (ste == null) {
                 FormattingTuple ft =
                     MessageFormatter.format("Failed to find {}, "
@@ -39,12 +37,12 @@ final class BackTrackingConverterUtils {
         return null;
     }
 
-    static StackTraceElement getStackTraceElementWithClassName(
-        StackTraceElement[] stackTrace, String targetClassName) {
+    static StackTraceElement getStackTraceElementForLogger(
+        StackTraceElement[] stackTrace, String loggerName) {
 
         if (stackTrace != null) {
             for (StackTraceElement ste : stackTrace) {
-                if (ste.getClassName().startsWith(targetClassName))
+                if (loggerName.startsWith(ste.getClassName()))
                     return ste;
             }
         }
