@@ -1,4 +1,4 @@
-package com.dwijnand.logright.utils;
+package com.dwijnand.logright;
 
 import org.slf4j.Logger;
 

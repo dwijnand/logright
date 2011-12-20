@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
     <property name="pattern"
-        value="%d{HH:mm:ss.SSS} %-5level logger:%logger class:%class method:%method line:%line - %msg%n" />
+        value="%d{HH:mm:ss.SSS} %-5level %logger#%method:%line - %msg%n" />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder
-            class="com.dwijnand.logright.logging.CustomPatternLayoutEncoder">
+            class="com.dwijnand.logright.CustomPatternLayoutEncoder">
             <pattern>${pattern}</pattern>
         </encoder>
     </appender>

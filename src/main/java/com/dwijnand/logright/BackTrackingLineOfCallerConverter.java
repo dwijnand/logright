@@ -1,4 +1,4 @@
-package com.dwijnand.logright.logging;
+package com.dwijnand.logright;
 
 import ch.qos.logback.classic.pattern.LineOfCallerConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
