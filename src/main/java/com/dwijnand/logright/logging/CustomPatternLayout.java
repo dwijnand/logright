@@ -2,27 +2,33 @@ package com.dwijnand.logright.logging;
 
 import ch.qos.logback.classic.PatternLayout;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-// TODO Needed?
-@Deprecated
 public class CustomPatternLayout extends PatternLayout {
-    public CustomPatternLayout() {
-        Map<String, String> instanceConverterMap = getInstanceConverterMap();
+    public static final Map<String, String> defaultConverterMap;
 
-        // instanceConverterMap.put("C",
-        // ClassOfCallerConverter.class.getName());
-        // instanceConverterMap.put("class",
-        // ClassOfCallerConverter.class.getName());
+    static {
+        Map<String, String> defaultConverterMutableMap =
+            new HashMap<String, String>(PatternLayout.defaultConverterMap);
 
-        // instanceConverterMap.put("M",
-        // MethodOfCallerConverter.class.getName());
-        // instanceConverterMap.put("method",
-        // MethodOfCallerConverter.class.getName());
+        defaultConverterMutableMap.put("M",
+            BackTrackingMethodOfCallerConverter.class.getName());
+        defaultConverterMutableMap.put("method",
+            BackTrackingMethodOfCallerConverter.class.getName());
 
-        instanceConverterMap.put("L",
+        defaultConverterMutableMap.put("L",
             BackTrackingLineOfCallerConverter.class.getName());
-        instanceConverterMap.put("line",
+        defaultConverterMutableMap.put("line",
             BackTrackingLineOfCallerConverter.class.getName());
+
+        defaultConverterMap =
+            Collections.unmodifiableMap(defaultConverterMutableMap);
+    }
+
+    @Override
+    public Map<String, String> getDefaultConverterMap() {
+        return defaultConverterMap;
     }
 }
