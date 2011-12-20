@@ -6,6 +6,7 @@ import ch.qos.logback.core.pattern.PatternLayoutEncoderBase;
 
 import java.util.Map;
 
+// TODO: Rename
 public class CustomPatternLayoutEncoder extends
     PatternLayoutEncoderBase<ILoggingEvent> {
 
@@ -15,8 +16,15 @@ public class CustomPatternLayoutEncoder extends
         patternLayout.setContext(context);
         patternLayout.setPattern(getPattern());
 
+        // TODO: Move custom converters to PatternLayout subclass.
         Map<String, String> instanceConverterMap =
             patternLayout.getInstanceConverterMap();
+
+        instanceConverterMap.put("M",
+            BackTrackingMethodOfCallerConverter.class.getName());
+        instanceConverterMap.put("method",
+            BackTrackingMethodOfCallerConverter.class.getName());
+
         instanceConverterMap.put("L",
             BackTrackingLineOfCallerConverter.class.getName());
         instanceConverterMap.put("line",
