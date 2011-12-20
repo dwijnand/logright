@@ -11,8 +11,7 @@ final class ConverterUtils {
 
     static StackTraceElement getStackTraceElementForLogger(ILoggingEvent le,
         String convertionTarget, ContextAware ca) {
-        return matchStackTraceElementWithLogger(le, convertionTarget, ca)
-            .getStackTraceElement();
+        return matchStackTraceElementWithLogger(le, convertionTarget, ca).ste;
     }
 
     static StackTraceElementMatch matchStackTraceElementWithLogger(
@@ -39,9 +38,9 @@ final class ConverterUtils {
                 String className = ste.getClassName();
                 // TODO: Consider using equals... renaming match class..
                 if (loggerName.startsWith(className))
-                    return new StackTraceElementExactMatch(ste);
+                    return new StackTraceElementMatch(ste, ste.getClassName());
                 else if (loggerName.endsWith(className + ")"))
-                    return new StackTraceElementSubclassMatch(ste, loggerName);
+                    return new StackTraceElementMatch(ste, loggerName);
             }
         }
         return null;
@@ -64,52 +63,14 @@ final class ConverterUtils {
         return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
     }
 
-    static interface StackTraceElementMatch {
-        StackTraceElement getStackTraceElement();
+    static class StackTraceElementMatch {
+        final StackTraceElement ste;
+        final String classOfCaller;
 
-        String getClassOfCaller();
-    }
-
-    private static abstract class AbstractStackTraceElementMatch implements
-        StackTraceElementMatch {
-
-        private final StackTraceElement stackTraceElement;
-
-        public AbstractStackTraceElementMatch(
-            StackTraceElement stackTraceElement) {
-            this.stackTraceElement = stackTraceElement;
-        }
-
-        public StackTraceElement getStackTraceElement() {
-            return stackTraceElement;
-        }
-    }
-
-    private static final class StackTraceElementExactMatch extends
-        AbstractStackTraceElementMatch {
-
-        public StackTraceElementExactMatch(StackTraceElement stackTraceElement) {
-            super(stackTraceElement);
-        }
-
-        public String getClassOfCaller() {
-            return getStackTraceElement().getClassName();
-        }
-    }
-
-    private static final class StackTraceElementSubclassMatch extends
-        AbstractStackTraceElementMatch {
-
-        private final String classOfCaller;
-
-        public StackTraceElementSubclassMatch(
-            StackTraceElement stackTraceElement, String classOfCaller) {
-            super(stackTraceElement);
+        protected StackTraceElementMatch(StackTraceElement ste,
+            String classOfCaller) {
+            this.ste = ste;
             this.classOfCaller = classOfCaller;
-        }
-
-        public String getClassOfCaller() {
-            return classOfCaller;
         }
     }
 }

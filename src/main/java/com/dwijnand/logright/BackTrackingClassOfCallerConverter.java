@@ -15,6 +15,6 @@ public class BackTrackingClassOfCallerConverter extends ClassOfCallerConverter {
         if (stackTraceElementMatch == null)
             return super.getFullyQualifiedName(le);
 
-        return stackTraceElementMatch.getClassOfCaller();
+        return stackTraceElementMatch.classOfCaller;
     }
 }
