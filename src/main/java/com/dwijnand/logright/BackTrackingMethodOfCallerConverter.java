@@ -1,20 +1,18 @@
 package com.dwijnand.logright;
 
-import com.dwijnand.logright.internal.ConverterUtils;
-
 import ch.qos.logback.classic.pattern.MethodOfCallerConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.dwijnand.logright.internal.BackTrackingUtils;
 
 public class BackTrackingMethodOfCallerConverter extends
     MethodOfCallerConverter {
 
     @Override
     public String convert(ILoggingEvent le) {
-        StackTraceElement targetStackTraceElement =
-            ConverterUtils.getStackTraceElementForLogger(le,
-                "method of caller", this);
-        if (targetStackTraceElement == null)
+        StackTraceElement stackTraceElement =
+            BackTrackingUtils.findMatch(le, "method of caller", this).ste;
+        if (stackTraceElement == null)
             return super.convert(le);
-        return targetStackTraceElement.getMethodName();
+        return stackTraceElement.getMethodName();
     }
 }

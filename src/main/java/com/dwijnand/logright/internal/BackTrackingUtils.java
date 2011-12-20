@@ -4,50 +4,43 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.ContextAware;
 import org.slf4j.helpers.MessageFormatter;
 
-public final class ConverterUtils {
-    private ConverterUtils() {
+public final class BackTrackingUtils {
+    private BackTrackingUtils() {
         // Utility class
     }
 
-    public static StackTraceElement getStackTraceElementForLogger(
-        ILoggingEvent le, String convertionTarget, ContextAware ca) {
-
-        return matchStackTraceElementWithLogger(le, convertionTarget, ca).ste;
-    }
-
-    public static StackTraceElementMatch matchStackTraceElementWithLogger(
-        ILoggingEvent le, String convertionTarget, ContextAware ca) {
+    public static BackTrackingMatchBean findMatch(ILoggingEvent le,
+        String convertionTarget, ContextAware ca) {
 
         String loggerName = le.getLoggerName();
         StackTraceElement[] callerData = le.getCallerData();
         if (callerData != null && callerData.length > 0) {
-            StackTraceElementMatch stem =
-                matchStackTraceElementWithLogger(callerData, loggerName);
-            if (stem == null) {
-                logFailedCallerDataMatch(le, convertionTarget, ca);
+            BackTrackingMatchBean matchBean = findMatch(callerData, loggerName);
+            if (matchBean == null) {
+                logFailedMatch(le, convertionTarget, ca);
             } else
-                return stem;
+                return matchBean;
         }
         return null;
     }
 
-    static StackTraceElementMatch matchStackTraceElementWithLogger(
-        StackTraceElement[] stackTrace, String loggerName) {
+    static BackTrackingMatchBean findMatch(StackTraceElement[] stackTrace,
+        String loggerName) {
 
         if (stackTrace != null) {
             for (StackTraceElement ste : stackTrace) {
                 String className = ste.getClassName();
-                // TODO: Consider using equals... renaming match class..
+                // TODO: Test if its more better to also test equals first
                 if (loggerName.startsWith(className))
-                    return new StackTraceElementMatch(ste);
+                    return new BackTrackingMatchBean(ste);
                 else if (loggerName.endsWith(className + ")"))
-                    return new StackTraceElementMatch(ste, loggerName);
+                    return new BackTrackingMatchBean(ste, loggerName);
             }
         }
         return null;
     }
 
-    private static void logFailedCallerDataMatch(ILoggingEvent le,
+    private static void logFailedMatch(ILoggingEvent le,
         String convertionTarget, ContextAware ca) {
 
         ca.addWarn(format("Failed to find {}. (Logger name: {}, "
@@ -64,16 +57,16 @@ public final class ConverterUtils {
         return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
     }
 
-    public static class StackTraceElementMatch {
+    public static class BackTrackingMatchBean {
         public final StackTraceElement ste;
         public String classOfCaller;
 
-        public StackTraceElementMatch(StackTraceElement ste) {
+        public BackTrackingMatchBean(StackTraceElement ste) {
             this.ste = ste;
             classOfCaller = ste.getClassName();
         }
 
-        StackTraceElementMatch(StackTraceElement ste, String classOfCaller) {
+        BackTrackingMatchBean(StackTraceElement ste, String classOfCaller) {
             this.ste = ste;
             this.classOfCaller = classOfCaller;
         }
