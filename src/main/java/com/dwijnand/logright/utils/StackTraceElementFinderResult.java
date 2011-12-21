@@ -2,7 +2,6 @@ package com.dwijnand.logright.utils;
 
 import ch.qos.logback.core.spi.ContextAware;
 import com.dwijnand.logright.utils.ContextMessage.Level;
-import org.slf4j.helpers.MessageFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,15 +74,13 @@ public abstract class StackTraceElementFinderResult {
             new ArrayList<ContextMessage>();
 
         protected ResultNotFoundBuilder(String loggerName) {
-            String message =
-                format("Failed to find StackTraceElement for logger: {}",
-                    loggerName);
-            contextMessages.add(new ContextMessage(Level.WARN, message));
+            contextMessages.add(new ContextMessage(Level.WARN,
+                "Failed to find StackTraceElement for logger: {}", loggerName));
         }
 
         public ResultNotFoundBuilder addCause(String cause) {
-            String message = format("Cause: {}", cause);
-            contextMessages.add(new ContextMessage(Level.WARN, message));
+            contextMessages.add(new ContextMessage(Level.WARN, "Cause: {}",
+                cause));
             return this;
         }
 
@@ -92,9 +89,8 @@ public abstract class StackTraceElementFinderResult {
 
             attemptEnsueCapacity(contextMessages, callerData.length);
             for (int i = 0; i < callerData.length; i++) {
-                StackTraceElement ste = callerData[i];
-                String message = format(" callerData[{}]: {}", i, ste);
-                contextMessages.add(new ContextMessage(Level.INFO, message));
+                contextMessages.add(new ContextMessage(Level.INFO,
+                    " callerData[{}]: {}", i, callerData[i]));
             }
             return this;
         }
@@ -107,11 +103,6 @@ public abstract class StackTraceElementFinderResult {
 
         public ResultNotFound build() {
             return new ResultNotFound(contextMessages);
-        }
-
-        private static String format(String messagePattern, Object... args) {
-            return MessageFormatter.arrayFormat(messagePattern, args)
-                .getMessage();
         }
 
         private static <T> void attemptEnsueCapacity(List<T> list,

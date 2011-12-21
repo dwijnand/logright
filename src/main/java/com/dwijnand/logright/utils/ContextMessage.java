@@ -1,6 +1,8 @@
 package com.dwijnand.logright.utils;
 
 import ch.qos.logback.core.spi.ContextAware;
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MessageFormatter;
 
 class ContextMessage {
     static enum Level {
@@ -44,20 +46,20 @@ class ContextMessage {
     }
 
     private final Level level;
-    private final String message;
-    private Throwable throwable;
+    private final String messagePattern;
+    private final Object[] args;
 
-    public ContextMessage(Level level, String message, Throwable throwable) {
-        this(level, message);
-        this.throwable = throwable;
-    }
-
-    public ContextMessage(Level level, String message) {
+    public ContextMessage(Level level, String messagePattern, Object... args) {
         this.level = level;
-        this.message = message;
+        this.messagePattern = messagePattern;
+        this.args = args;
     }
 
     public void addToContext(ContextAware ca) {
+        FormattingTuple tuple =
+            MessageFormatter.arrayFormat(messagePattern, args);
+        String message = tuple.getMessage();
+        Throwable throwable = tuple.getThrowable();
         if (throwable == null) {
             level.addToContext(ca, message);
         } else {
