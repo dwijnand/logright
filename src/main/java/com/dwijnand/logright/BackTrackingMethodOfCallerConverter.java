@@ -30,7 +30,7 @@ public class BackTrackingMethodOfCallerConverter extends
             return ((ResultFound) result).getStackTraceElement()
                 .getMethodName();
 
-        ((ResultNotFound) result).addCause(this);
+        ((ResultNotFound) result).logMessagesToContext(this);
         return super.convert(le);
     }
 }

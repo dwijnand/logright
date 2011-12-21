@@ -8,7 +8,7 @@ class ContextMessage {
     static enum Level {
         INFO {
             @Override
-            void addToContext(ContextAware ca, String msg) {
+            void logToContext(ContextAware ca, String msg) {
                 ca.addInfo(msg);
             }
 
@@ -19,7 +19,7 @@ class ContextMessage {
         },
         WARN {
             @Override
-            void addToContext(ContextAware ca, String msg) {
+            void logToContext(ContextAware ca, String msg) {
                 ca.addWarn(msg);
             }
 
@@ -30,7 +30,7 @@ class ContextMessage {
         },
         ERROR {
             @Override
-            void addToContext(ContextAware ca, String msg) {
+            void logToContext(ContextAware ca, String msg) {
                 ca.addError(msg);
             }
 
@@ -40,7 +40,7 @@ class ContextMessage {
             }
         };
 
-        abstract void addToContext(ContextAware ca, String msg);
+        abstract void logToContext(ContextAware ca, String msg);
 
         abstract void addToContext(ContextAware ca, String msg, Throwable t);
     }
@@ -55,13 +55,13 @@ class ContextMessage {
         this.args = args;
     }
 
-    public void addToContext(ContextAware ca) {
+    public void logToContext(ContextAware ca) {
         FormattingTuple tuple =
             MessageFormatter.arrayFormat(messagePattern, args);
         String message = tuple.getMessage();
         Throwable throwable = tuple.getThrowable();
         if (throwable == null) {
-            level.addToContext(ca, message);
+            level.logToContext(ca, message);
         } else {
             level.addToContext(ca, message, throwable);
         }

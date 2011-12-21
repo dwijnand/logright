@@ -27,7 +27,7 @@ public class BackTrackingFileOfCallerConverter extends FileOfCallerConverter {
         if (result.found())
             return ((ResultFound) result).getStackTraceElement().getFileName();
 
-        ((ResultNotFound) result).addCause(this);
+        ((ResultNotFound) result).logMessagesToContext(this);
         return super.convert(le);
     }
 }

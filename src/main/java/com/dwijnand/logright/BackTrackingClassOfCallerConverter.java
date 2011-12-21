@@ -27,7 +27,7 @@ public class BackTrackingClassOfCallerConverter extends ClassOfCallerConverter {
         if (result.found())
             return ((ResultFound) result).getClassOfCaller();
 
-        ((ResultNotFound) result).addCause(this);
+        ((ResultNotFound) result).logMessagesToContext(this);
         return super.getFullyQualifiedName(le);
     }
 }

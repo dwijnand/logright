@@ -66,9 +66,9 @@ public interface StackTraceElementFinder {
                 return false;
             }
 
-            public void addCause(ContextAware ca) {
+            public void logMessagesToContext(ContextAware ca) {
                 for (ContextMessage contextMessage : contextMessages) {
-                    contextMessage.addToContext(ca);
+                    contextMessage.logToContext(ca);
                 }
             }
         }

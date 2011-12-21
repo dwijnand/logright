@@ -28,7 +28,7 @@ public class BackTrackingLineOfCallerConverter extends LineOfCallerConverter {
             return Integer.toString(((ResultFound) result)
                 .getStackTraceElement().getLineNumber());
 
-        ((ResultNotFound) result).addCause(this);
+        ((ResultNotFound) result).logMessagesToContext(this);
         return super.convert(le);
     }
 }
