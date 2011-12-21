@@ -1,33 +1,11 @@
 package com.dwijnand.logright;
 
-import ch.qos.logback.classic.pattern.ClassOfCallerConverter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.dwijnand.logright.utils.DefaultStackTraceElementFinder;
-import com.dwijnand.logright.utils.StackTraceElementFinder;
-import com.dwijnand.logright.utils.StackTraceElementFinder.Result;
-import com.dwijnand.logright.utils.StackTraceElementFinder.Result.ResultFound;
-import com.dwijnand.logright.utils.StackTraceElementFinder.Result.ResultNotFound;
+import com.dwijnand.logright.utils.BackTrackingStackTraceElementFinder;
 
-public class BackTrackingClassOfCallerConverter extends ClassOfCallerConverter {
-    private final StackTraceElementFinder stackTraceElementFinder;
+public class BackTrackingClassOfCallerConverter extends
+    ClassOfCallerConverterBase {
 
     public BackTrackingClassOfCallerConverter() {
-        this(new DefaultStackTraceElementFinder());
-    }
-
-    public BackTrackingClassOfCallerConverter(
-        StackTraceElementFinder stackTraceElementFinder) {
-        this.stackTraceElementFinder = stackTraceElementFinder;
-    }
-
-    @Override
-    protected String getFullyQualifiedName(ILoggingEvent le) {
-        Result result = stackTraceElementFinder.find(le);
-
-        if (result.found())
-            return ((ResultFound) result).getClassOfCaller();
-
-        ((ResultNotFound) result).logMessagesToContext(this);
-        return super.getFullyQualifiedName(le);
+        super(BackTrackingStackTraceElementFinder.INSTANCE);
     }
 }

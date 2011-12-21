@@ -7,6 +7,13 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  * first one of the caller data.
  */
 public class ClassicStackTraceElementFinder implements StackTraceElementFinder {
+    public static final ClassicStackTraceElementFinder INSTANCE =
+        new ClassicStackTraceElementFinder();
+
+    private ClassicStackTraceElementFinder() {
+        // Singleton class
+    }
+
     @Override
     public Result find(ILoggingEvent le) {
         StackTraceElement[] callerData = le.getCallerData();
@@ -14,8 +21,8 @@ public class ClassicStackTraceElementFinder implements StackTraceElementFinder {
         if (callerData != null && callerData.length > 0)
             return Result.found(callerData[0]);
 
-        return Result
-            .notFoundBuilder(le.getLoggerName()).addCallerData(callerData)
-            .addCause("No caller data exists").build();
+        return Result.notFoundBuilder(le.getLoggerName())
+            .addCallerData(callerData).addCause("No caller data exists")
+            .build();
     }
 }
