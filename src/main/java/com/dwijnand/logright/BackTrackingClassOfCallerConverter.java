@@ -9,12 +9,12 @@ import com.dwijnand.logright.internal.BackTrackingUtils.BackTrackingMatchBean;
 public class BackTrackingClassOfCallerConverter extends ClassOfCallerConverter {
     @Override
     protected String getFullyQualifiedName(ILoggingEvent le) {
-        BackTrackingMatchBean backTrackingMatchBean =
+        BackTrackingMatchBean matchBean =
             BackTrackingUtils.findMatch(le, "class of caller", this);
 
-        if (backTrackingMatchBean == null)
+        if (matchBean == null)
             return super.getFullyQualifiedName(le);
 
-        return backTrackingMatchBean.classOfCaller;
+        return matchBean.classOfCaller;
     }
 }
