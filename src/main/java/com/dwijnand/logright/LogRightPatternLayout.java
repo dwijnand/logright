@@ -6,31 +6,31 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomPatternLayout extends PatternLayout {
+public class LogRightPatternLayout extends PatternLayout {
     public static final Map<String, String> defaultConverterMap;
 
     static {
         Map<String, String> defaultConverterMutableMap =
             new HashMap<String, String>(PatternLayout.defaultConverterMap);
 
-        defaultConverterMutableMap.put("C",
+        defaultConverterMutableMap.put("RC",
             BackTrackingClassOfCallerConverter.class.getName());
-        defaultConverterMutableMap.put("class",
+        defaultConverterMutableMap.put("rightclass",
             BackTrackingClassOfCallerConverter.class.getName());
 
-        defaultConverterMutableMap.put("M",
+        defaultConverterMutableMap.put("RM",
             BackTrackingMethodOfCallerConverter.class.getName());
-        defaultConverterMutableMap.put("method",
+        defaultConverterMutableMap.put("rightmethod",
             BackTrackingMethodOfCallerConverter.class.getName());
 
-        defaultConverterMutableMap.put("L",
+        defaultConverterMutableMap.put("RL",
             BackTrackingLineOfCallerConverter.class.getName());
-        defaultConverterMutableMap.put("line",
+        defaultConverterMutableMap.put("rightline",
             BackTrackingLineOfCallerConverter.class.getName());
 
-        defaultConverterMutableMap.put("F",
+        defaultConverterMutableMap.put("RF",
             BackTrackingFileOfCallerConverter.class.getName());
-        defaultConverterMutableMap.put("file",
+        defaultConverterMutableMap.put("rightfile",
             BackTrackingFileOfCallerConverter.class.getName());
 
         defaultConverterMap =

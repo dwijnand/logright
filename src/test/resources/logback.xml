@@ -3,11 +3,13 @@
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
     <property name="pattern"
-        value="%d{HH:mm:ss.SSS} %-5level %class#%method:%line - %msg%n" />
+        value="%d{HH:mm:ss.SSS} %-5level %rightclass#%rightmethod:%rightline - %msg%n" />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="com.dwijnand.logright.CustomPatternLayoutEncoder">
-            <pattern>${pattern}</pattern>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.dwijnand.logright.LogRightPatternLayout">
+                <pattern>${pattern}</pattern>
+            </layout>
         </encoder>
     </appender>
 
