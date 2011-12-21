@@ -28,6 +28,11 @@ public class CustomPatternLayout extends PatternLayout {
         defaultConverterMutableMap.put("line",
             BackTrackingLineOfCallerConverter.class.getName());
 
+        defaultConverterMutableMap.put("F",
+            BackTrackingFileOfCallerConverter.class.getName());
+        defaultConverterMutableMap.put("file",
+            BackTrackingFileOfCallerConverter.class.getName());
+
         defaultConverterMap =
             Collections.unmodifiableMap(defaultConverterMutableMap);
     }
