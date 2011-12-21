@@ -8,13 +8,13 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  */
 public class ClassicStackTraceElementFinder implements StackTraceElementFinder {
     @Override
-    public StackTraceElementFinderResult find(ILoggingEvent le) {
+    public Result find(ILoggingEvent le) {
         StackTraceElement[] callerData = le.getCallerData();
 
         if (callerData != null && callerData.length > 0)
-            return StackTraceElementFinderResult.found(callerData[0]);
+            return Result.found(callerData[0]);
 
-        return StackTraceElementFinderResult
+        return Result
             .notFoundBuilder(le.getLoggerName()).addCallerData(callerData)
             .addCause("No caller data exists").build();
     }
