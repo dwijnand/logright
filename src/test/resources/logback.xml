@@ -6,10 +6,8 @@
         value="%d{HH:mm:ss.SSS} %-5level %rightclass#%rightmethod:%rightline - %msg%n" />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="com.dwijnand.logright.LogRightPatternLayout">
-                <pattern>${pattern}</pattern>
-            </layout>
+        <encoder class="com.dwijnand.logright.LogRightPatternLayoutEncoder">
+            <pattern>${pattern}</pattern>
         </encoder>
     </appender>
 
