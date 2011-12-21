@@ -12,44 +12,69 @@ public final class BackTrackingUtils {
     public static BackTrackingMatchBean findMatch(ILoggingEvent le,
         String convertionTarget, ContextAware ca) {
 
-        String loggerName = le.getLoggerName();
         StackTraceElement[] callerData = le.getCallerData();
         if (callerData != null && callerData.length > 0) {
-            BackTrackingMatchBean matchBean = findMatch(callerData, loggerName);
+            BackTrackingMatchBean matchBean =
+                doFindMatch(le, convertionTarget, ca);
             if (matchBean == null) {
-                logFailedMatch(le, convertionTarget, ca);
+                logFailedMatch(le, ca, convertionTarget);
             } else
                 return matchBean;
         }
         return null;
     }
 
-    static BackTrackingMatchBean findMatch(StackTraceElement[] stackTrace,
-        String loggerName) {
+    static BackTrackingMatchBean doFindMatch(ILoggingEvent le,
+        String convertionTarget, ContextAware ca) {
 
-        if (stackTrace != null) {
-            for (StackTraceElement ste : stackTrace) {
-                String className = ste.getClassName();
-                // TODO: Test if its more better to also test equals first
-                if (loggerName.startsWith(className))
-                    return new BackTrackingMatchBean(ste);
-                else if (loggerName.endsWith(className + ")"))
-                    return new BackTrackingMatchBean(ste, loggerName);
+        String loggerName = le.getLoggerName();
+        StackTraceElement[] stackTrace = le.getCallerData();
+        for (StackTraceElement ste : stackTrace) {
+            String className = ste.getClassName();
+            if (loggerName.equals(className))
+                return new BackTrackingMatchBean(ste);
+            else {
+                try {
+                    Class<?> loggingClass = Class.forName(loggerName);
+                    Class<?> stackTraceElementClass = Class.forName(className);
+                    if (stackTraceElementClass.isAssignableFrom(loggingClass))
+                        return new BackTrackingMatchBean(ste, className);
+                } catch (ClassNotFoundException e) {
+                    logFailedMatch(le, ca, convertionTarget,
+                        "Failed to find class: " + loggerName);
+                }
             }
         }
         return null;
     }
 
-    private static void logFailedMatch(ILoggingEvent le,
-        String convertionTarget, ContextAware ca) {
+    private static void logFailedMatch(ILoggingEvent le, ContextAware ca,
+        String convertionTarget) {
 
-        ca.addWarn(format("Failed to find {}. (Logger name: {}, "
-            + "caller data to follow)", convertionTarget, le.getLoggerName()));
+        String warnMessage =
+            format("Failed to find {}. (Logger name: {}, caller data to "
+                + "follow)", convertionTarget, le.getLoggerName());
+        doLogFailedMatch(le, ca, warnMessage);
+    }
+
+    private static void logFailedMatch(ILoggingEvent le, ContextAware ca,
+        String convertionTarget, String reason) {
+
+        String warnMessage =
+            format("Failed to find {}. (Logger name: {}, reason: {}, "
+                + "caller data to follow)", convertionTarget,
+                le.getLoggerName(), reason);
+        doLogFailedMatch(le, ca, warnMessage);
+    }
+
+    private static void doLogFailedMatch(ILoggingEvent le, ContextAware ca,
+        String warnMessage) {
+
+        ca.addWarn(warnMessage);
         StackTraceElement[] callerData = le.getCallerData();
         for (int i = 0; i < callerData.length; i++) {
             StackTraceElement e = callerData[i];
-            ca.addInfo(format(" callerData[{}] classname: {}", i,
-                e.getClassName()));
+            ca.addInfo(format(" callerData[{}]: {}", i, e));
         }
     }
 
