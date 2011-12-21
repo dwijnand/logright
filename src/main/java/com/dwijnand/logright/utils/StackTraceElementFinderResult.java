@@ -1,6 +1,7 @@
 package com.dwijnand.logright.utils;
 
 import ch.qos.logback.core.spi.ContextAware;
+import com.dwijnand.logright.utils.ContextMessage.Level;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.util.ArrayList;
@@ -49,13 +50,12 @@ public abstract class StackTraceElementFinderResult {
     }
 
     public static class ResultNotFound extends StackTraceElementFinderResult {
-        private final String warnMessage;
-        private final String[] infoMessages;
+        private final ContextMessage[] contextMessages;
 
-        protected ResultNotFound(String warnMessage, List<String> infoMessages) {
-            this.warnMessage = warnMessage;
-            this.infoMessages =
-                infoMessages.toArray(new String[infoMessages.size()]);
+        protected ResultNotFound(List<ContextMessage> contextMessages) {
+            this.contextMessages =
+                contextMessages.toArray(new ContextMessage[contextMessages
+                    .size()]);
         }
 
         @Override
@@ -64,54 +64,49 @@ public abstract class StackTraceElementFinderResult {
         }
 
         public void addCause(ContextAware ca) {
-            ca.addWarn(warnMessage);
-            for (String infoMessage : infoMessages) {
-                ca.addInfo(infoMessage);
+            for (ContextMessage contextMessage : contextMessages) {
+                contextMessage.addToContext(ca);
             }
         }
     }
 
     public static class ResultNotFoundBuilder {
-        private final String loggerName;
-        private String cause;
-        private final List<String> infoMessages = new ArrayList<String>();
+        private final List<ContextMessage> contextMessages =
+            new ArrayList<ContextMessage>();
 
         protected ResultNotFoundBuilder(String loggerName) {
-            this.loggerName = loggerName;
+            String message =
+                format("Failed to find StackTraceElement for logger: {}",
+                    loggerName);
+            contextMessages.add(new ContextMessage(Level.WARN, message));
         }
 
         public ResultNotFoundBuilder addCause(String cause) {
-            this.cause = cause;
+            String message = format("Cause: {}", cause);
+            contextMessages.add(new ContextMessage(Level.WARN, message));
             return this;
         }
 
         public ResultNotFoundBuilder addCallerData(
             StackTraceElement[] callerData) {
 
-            attemptEnsueCapacity(infoMessages, callerData.length);
+            attemptEnsueCapacity(contextMessages, callerData.length);
             for (int i = 0; i < callerData.length; i++) {
                 StackTraceElement ste = callerData[i];
-                infoMessages.add(format(" callerData[{}]: {}", i, ste));
+                String message = format(" callerData[{}]: {}", i, ste);
+                contextMessages.add(new ContextMessage(Level.INFO, message));
             }
             return this;
         }
 
-        public ResultNotFound build() {
-            return new ResultNotFound(getWarnMessage(), infoMessages);
+        public ResultNotFoundBuilder addContextMessage(
+            ContextMessage contextMessage) {
+            contextMessages.add(contextMessage);
+            return this;
         }
 
-        private String getWarnMessage() {
-            final String warnMessage;
-            if (cause == null) {
-                warnMessage =
-                    format("Failed to find StackTraceElement for logger: {}",
-                        loggerName);
-            } else {
-                warnMessage =
-                    format("Failed to find StackTraceElement for logger: {} "
-                        + "(cause: {})", loggerName, cause);
-            }
-            return warnMessage;
+        public ResultNotFound build() {
+            return new ResultNotFound(contextMessages);
         }
 
         private static String format(String messagePattern, Object... args) {
